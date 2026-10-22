@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma EAD | Treinamento & Avaliação</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#03173d">
+  
+  <!-- Fonte Google Inter para tipografia moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       RESET & VARIÁVEIS DE DESIGN HIGH-TECH / DARK FUTURISTIC
+       ========================================================================== */
+    :root {
+      --bg-dark: #050814;
+      --bg-surface: rgba(13, 22, 44, 0.65);
+      --neon-cyan: #00f3ff;
+      --neon-blue: #0077ff;
+      --neon-purple: #9d4edd;
+      --neon-green: #00ff88;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(0, 243, 255, 0.18);
+      --border-glass-active: rgba(0, 255, 136, 0.5);
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       EFEITOS DE FUNDO & ORBS LUMINOSAS (AMBIÊNCIA CYBERPUNK / HIGH-TECH)
+       ========================================================================== */
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .glow-1 {
+      top: -10%;
+      left: 10%;
+      width: 450px;
+      height: 450px;
+      background: var(--neon-cyan);
+    }
+    .glow-2 {
+      bottom: -10%;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      background: var(--neon-purple);
+    }
+
+    /* GRID SUTIL NO BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       CONTAINER PRINCIPAL COM GLASSMORPHISM
+       ========================================================================== */
+    .ead-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 960px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(0, 243, 255, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    /* ==========================================================================
+       CABEÇALHO DA AULA / MÓDULO
+       ========================================================================== */
+    .ead-header {
+      margin-bottom: 28px;
+    }
+
+    .badge-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tech-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(0, 243, 255, 0.1);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .status-badge.locked {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .status-badge.unlocked {
+      background: rgba(0, 255, 136, 0.15);
+      color: var(--neon-green);
+      border: 1px solid var(--border-glass-active);
+      box-shadow: 0 0 14px rgba(0, 255, 136, 0.35);
+    }
+
+    .status-badge .indicator-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .ead-header h1 {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .ead-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       CONTAINER DO VÍDEO (RESPONSIVO 16:9 COM BORDA FUTURISTA)
+       ========================================================================== */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* Aspect Ratio 16:9 */
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .video-wrapper iframe,
+    .video-wrapper #player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* BARRA DE ORIENTAÇÃO / STATUS DA AULA */
+    .instruction-bar {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .instruction-bar .info-text {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+    }
+
+    .instruction-bar .info-text strong {
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       CONTAINER DO GOOGLE FORMS (INICIA OCULTO: display: none)
+       ========================================================================== */
+    #formsContainer {
+      display: none; /* Regra Crítica: oculto até o vídeo finalizar */
+      margin-top: 36px;
+      padding-top: 32px;
+      border-top: 1px dashed rgba(0, 243, 255, 0.3);
+      position: relative;
+    }
+
+    /* ANIMAÇÃO DE FADE-IN SUAVE AO LIBERAR */
+    #formsContainer.is-unlocked {
+      display: block;
+      animation: neonSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes neonSlideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+        filter: blur(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    .evaluation-header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .evaluation-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      background: rgba(0, 255, 136, 0.15);
+      color: var(--neon-green);
+      border: 1px solid var(--border-glass-active);
+      margin-bottom: 10px;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
+    }
+
+    .evaluation-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .evaluation-header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .forms-frame-wrap {
+      width: 100%;
+      height: 850px;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid var(--neon-green);
+      box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.7),
+        0 0 25px rgba(0, 255, 136, 0.25);
+    }
+
+    .forms-frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ==========================================================================
+       RESPONSIVIDADE (MOBILE & TABLET)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 12px;
+      }
+      .ead-container {
+        padding: 22px 16px;
+        border-radius: 16px;
+      }
+      .forms-frame-wrap {
+        height: 650px;
+      }
+      .instruction-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Elementos de iluminação ambiente high-tech -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- CONTAINER PRINCIPAL GLASSMORPHISM -->
+  <main class="ead-container" id="mainContainer">
+
+    <!-- CABEÇALHO DO MÓDULO EAD -->
+    <header class="ead-header">
+      <div class="badge-bar">
+        <span class="tech-badge">EAD // TREINAMENTO</span>
+        <span class="status-badge locked" id="evaluationStatusBadge">
+          <span class="indicator-dot"></span>
+          <span id="statusBadgeText">Avaliação Bloqueada</span>
+        </span>
+      </div>
+      <h1>Módulo de Aprendizado & Avaliação</h1>
+      <p>Assista ao vídeo tutorial completo abaixo. A avaliação oficial será liberada automaticamente no final da aula.</p>
+    </header>
+
+    <!-- ÁREA DO VÍDEO TUTORIAL (YOUTUBE API) -->
+    <div class="video-wrapper">
+      <div id="player"></div>
+    </div>
+
+    <!-- BARRA INFORMATIVA DE STATUS -->
+    <div class="instruction-bar" id="instructionBar">
+      <div class="info-text">
+        <span id="instructionIcon">⏳</span>
+        <span id="instructionText"><strong>Atenção:</strong> É obrigatório assistir ao vídeo até o término para habilitar o questionário.</span>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         BLOCO DO GOOGLE FORMS (INICIA display: none CONFORME REGRA DE NEGÓCIO)
+         ========================================================================== -->
+    <section id="formsContainer">
+      <div class="evaluation-header">
+        <span class="evaluation-badge">✓ ETAPA CONCLUÍDA</span>
+        <h2>Questionário de Fixação do Conteúdo</h2>
+        <p>Preencha os campos abaixo com as suas respostas para validar sua presença e certificação:</p>
+      </div>
+
+      <div class="forms-frame-wrap">
+        <!-- 
+          👉 SUBSTITUA AQUI PELA URL DO SEU GOOGLE FORMS:
+          Basta copiar o link de incorporação gerado pelo Google Forms (Enviar > < > Incorporar HTML) 
+        -->
+        <iframe 
+          id="googleFormsIframe"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSeAtOTHnnBZFm_PP678rQ5AVJdpZNWboYP3JLyvfywPoC7QVg/viewform?embedded=true"
+          frameborder="0" 
+          marginheight="0" 
+          marginwidth="0">
+          Carregando formulário...
+        </iframe>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       YOUTUBE IFRAME API & LÓGICA DE DESBLOQUEIO EM JAVASCRIPT PURO
+       ========================================================================== -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    /**
+     * CONFIGURAÇÕES DA AULA
+     */
+    // 👉 SUBSTITUA AQUI PELO ID DO SEU VÍDEO DO YOUTUBE:
+    // Exemplo: se o link for https://www.youtube.com/watch?v=Ki_7Dl3bs1k, o ID é 'Ki_7Dl3bs1k'
+    const YOUTUBE_VIDEO_ID = 'Ki_7Dl3bs1k';
+
+    let ytPlayer;
+
+    /**
+     * 1. Callback automático executado assim que a API do YouTube termina de carregar.
+     */
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player('player', {
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          playsinline: 1,
+          rel: 0,              // Não exibe vídeos recomendados externos ao pausar
+          modestbranding: 1   // Minimiza a marca do YouTube na barra de controle
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event) {
+      console.log('[EAD] Player de vídeo carregado com sucesso.');
+    }
+
+    /**
+     * 2. Lógica Crítica de Negócio: Monitora as mudanças de estado do vídeo.
+     * YT.PlayerState.ENDED (valor 0) indica o exato instante em que o vídeo chega ao fim.
+     */
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        console.log('[EAD] Vídeo concluído! Liberando avaliação...');
+        unlockGoogleFormsEvaluation();
+      }
+    }
+
+    /**
+     * 3. Função responsável por desbloquear e exibir suavemente o Google Forms.
+     */
+    function unlockGoogleFormsEvaluation() {
+      const formsContainer = document.getElementById('formsContainer');
+      const statusBadge = document.getElementById('evaluationStatusBadge');
+      const statusText = document.getElementById('statusBadgeText');
+      const instructionBar = document.getElementById('instructionBar');
+      const instructionIcon = document.getElementById('instructionIcon');
+      const instructionText = document.getElementById('instructionText');
+      const mainContainer = document.getElementById('mainContainer');
+
+      if (!formsContainer) return;
+
+      // Altera a visibilidade com a classe CSS que dispara a animação suave (fade-in + slide-down)
+      formsContainer.classList.add('is-unlocked');
+
+      // Atualiza o crachá de status no topo
+      if (statusBadge && statusText) {
+        statusBadge.classList.remove('locked');
+        statusBadge.classList.add('unlocked');
+        statusText.textContent = 'Avaliação Liberada ✓';
+      }
+
+      // Atualiza a barra informativa com mensagem de parabéns
+      if (instructionBar && instructionText && instructionIcon) {
+        instructionIcon.textContent = '🎉';
+        instructionText.innerHTML = '<strong>Parabéns!</strong> Você concluiu o vídeo com sucesso. Responda ao questionário abaixo:';
+        instructionBar.style.borderColor = 'rgba(0, 255, 136, 0.4)';
+        instructionBar.style.background = 'rgba(0, 255, 136, 0.08)';
+      }
+
+      // Adiciona brilho sutil verde na borda do container principal
+      if (mainContainer) {
+        mainContainer.style.borderColor = 'rgba(0, 255, 136, 0.45)';
+        mainContainer.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 255, 136, 0.15)';
+      }
+
+      // Rolagem suave até o formulário liberado
+      setTimeout(() => {
+        formsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 350);
+    }
+  </script>
+
+</body>
+</html>
